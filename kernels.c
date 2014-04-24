@@ -47,10 +47,12 @@ void naive_rotate(int dim, pixel *src, pixel *dst)
 char rotate_descr[] = "rotate: Current working version";
 void rotate(int dim, pixel *src, pixel *dst) 
 {
-    int i, j;
+    int i, j, ii, jj, bsize = 32;
 
-    for (i = 0; i < dim; i+=4)
-	for (j = 0; j < dim; j+=8) {
+	for (ii = 0; ii < dim; ii+= bsize)
+	for (jj = 0; jj < dim; jj+= bsize)
+	for (i = ii; i < ii + bsize; i+=4)
+	for (j = jj; j < jj + bsize; j+=8) {
 	    dst[RIDX(dim-1-j, i, dim)] = src[RIDX(i, j, dim)];
 		dst[RIDX(dim-1-j, i+1, dim)] = src[RIDX(i+1, j, dim)];
 		dst[RIDX(dim-1-j, i+2, dim)] = src[RIDX(i+2, j, dim)];
