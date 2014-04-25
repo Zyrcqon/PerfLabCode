@@ -130,6 +130,9 @@ typedef struct {
     int green;
     int blue;
     int num;
+    int new_red;
+    int new_green;
+    int new_blue;
 } pixel_sum;
 
 /* Compute min and max of two integers, respectively */
