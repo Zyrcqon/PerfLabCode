@@ -1,4 +1,4 @@
-/********************************************************
+ ********************************************************
  * Kernels to be optimized for the CS:APP Performance Lab
  ********************************************************/
 
@@ -31,13 +31,13 @@ team_t team = {
  * naive_rotate - The naive baseline version of rotate 
  */
 char naive_rotate_descr[] = "naive_rotate: Naive baseline implementation";
-void naive_rotate(int dim, pixel *src, pixel *dst) 
+void naive_rotate(int dim, pixel *src, pixel *dst)
 {
     int i, j;
 
     for (i = 0; i < dim; i++)
-	for (j = 0; j < dim; j++)
-	    dst[RIDX(dim-1-j, i, dim)] = src[RIDX(i, j, dim)];
+        for (j = 0; j < dim; j++)
+            dst[RIDX(dim-1-j, i, dim)] = src[RIDX(i, j, dim)];
 }
 
 /* 
@@ -45,54 +45,58 @@ void naive_rotate(int dim, pixel *src, pixel *dst)
  * IMPORTANT: This is the version you will be graded on
  */
 char rotate_descr[] = "rotate: Current working version";
-void rotate(int dim, pixel *src, pixel *dst) 
+void rotate(int dim, pixel *src, pixel *dst)
 {
     int i, j, ii, jj, bsize = 32;
+        if (dim < 256) {
+            naive_rotate (dim, src, dst);
+        } else {
+                for (ii = 0; ii < dim; ii+= bsize)
+                for (jj = 0; jj < dim; jj+= bsize)
+                for (i = ii; i < ii + bsize; i+=4)
+                for (j = jj; j < jj + bsize; j+=8) {
+                        dst[RIDX(dim-1-j, i, dim)] = src[RIDX(i, j, dim)];
+                        dst[RIDX(dim-1-j, i+1, dim)] = src[RIDX(i+1, j, dim)];
+                        dst[RIDX(dim-1-j, i+2, dim)] = src[RIDX(i+2, j, dim)];
+                        dst[RIDX(dim-1-j, i+3, dim)] = src[RIDX(i+3, j, dim)];
 
-	for (ii = 0; ii < dim; ii+= bsize)
-	for (jj = 0; jj < dim; jj+= bsize)
-	for (i = ii; i < ii + bsize; i+=4)
-	for (j = jj; j < jj + bsize; j+=8) {
-	    dst[RIDX(dim-1-j, i, dim)] = src[RIDX(i, j, dim)];
-		dst[RIDX(dim-1-j, i+1, dim)] = src[RIDX(i+1, j, dim)];
-		dst[RIDX(dim-1-j, i+2, dim)] = src[RIDX(i+2, j, dim)];
-		dst[RIDX(dim-1-j, i+3, dim)] = src[RIDX(i+3, j, dim)];
-		
-		dst[RIDX(dim-1-j-1, i, dim)] = src[RIDX(i, j+1, dim)];
-		dst[RIDX(dim-1-j-1, i+1, dim)] = src[RIDX(i+1, j+1, dim)];
-		dst[RIDX(dim-1-j-1, i+2, dim)] = src[RIDX(i+2, j+1, dim)];
-		dst[RIDX(dim-1-j-1, i+3, dim)] = src[RIDX(i+3, j+1, dim)];
-		
-		dst[RIDX(dim-1-j-2, i, dim)] = src[RIDX(i, j+2, dim)];
-		dst[RIDX(dim-1-j-2, i+1, dim)] = src[RIDX(i+1, j+2, dim)];
-		dst[RIDX(dim-1-j-2, i+2, dim)] = src[RIDX(i+2, j+2, dim)];
-		dst[RIDX(dim-1-j-2, i+3, dim)] = src[RIDX(i+3, j+2, dim)];
-		
-		dst[RIDX(dim-1-j-3, i, dim)] = src[RIDX(i, j+3, dim)];
-		dst[RIDX(dim-1-j-3, i+1, dim)] = src[RIDX(i+1, j+3, dim)];
-		dst[RIDX(dim-1-j-3, i+2, dim)] = src[RIDX(i+2, j+3, dim)];
-		dst[RIDX(dim-1-j-3, i+3, dim)] = src[RIDX(i+3, j+3, dim)];
-		
-	    dst[RIDX(dim-1-j-4, i, dim)] = src[RIDX(i, j+4, dim)];
-		dst[RIDX(dim-1-j-4, i+1, dim)] = src[RIDX(i+1, j+4, dim)];
-		dst[RIDX(dim-1-j-4, i+2, dim)] = src[RIDX(i+2, j+4, dim)];
-		dst[RIDX(dim-1-j-4, i+3, dim)] = src[RIDX(i+3, j+4, dim)];
-		
-		dst[RIDX(dim-1-j-5, i, dim)] = src[RIDX(i, j+5, dim)];
-		dst[RIDX(dim-1-j-5, i+1, dim)] = src[RIDX(i+1, j+5, dim)];
-		dst[RIDX(dim-1-j-5, i+2, dim)] = src[RIDX(i+2, j+5, dim)];
-		dst[RIDX(dim-1-j-5, i+3, dim)] = src[RIDX(i+3, j+5, dim)];
-		
-		dst[RIDX(dim-1-j-6, i, dim)] = src[RIDX(i, j+6, dim)];
-		dst[RIDX(dim-1-j-6, i+1, dim)] = src[RIDX(i+1, j+6, dim)];
-		dst[RIDX(dim-1-j-6, i+2, dim)] = src[RIDX(i+2, j+6, dim)];
-		dst[RIDX(dim-1-j-6, i+3, dim)] = src[RIDX(i+3, j+6, dim)];
-		
-		dst[RIDX(dim-1-j-7, i, dim)] = src[RIDX(i, j+7, dim)];
-		dst[RIDX(dim-1-j-7, i+1, dim)] = src[RIDX(i+1, j+7, dim)];
-		dst[RIDX(dim-1-j-7, i+2, dim)] = src[RIDX(i+2, j+7, dim)];
-		dst[RIDX(dim-1-j-7, i+3, dim)] = src[RIDX(i+3, j+7, dim)];
-	}
+                        dst[RIDX(dim-1-j-1, i, dim)] = src[RIDX(i, j+1, dim)];
+                        dst[RIDX(dim-1-j-1, i+1, dim)] = src[RIDX(i+1, j+1, dim)];
+                        dst[RIDX(dim-1-j-1, i+2, dim)] = src[RIDX(i+2, j+1, dim)];
+                        dst[RIDX(dim-1-j-1, i+3, dim)] = src[RIDX(i+3, j+1, dim)];
+
+                        dst[RIDX(dim-1-j-2, i, dim)] = src[RIDX(i, j+2, dim)];
+                        dst[RIDX(dim-1-j-2, i+1, dim)] = src[RIDX(i+1, j+2, dim)];
+                        dst[RIDX(dim-1-j-2, i+2, dim)] = src[RIDX(i+2, j+2, dim)];
+                        dst[RIDX(dim-1-j-2, i+3, dim)] = src[RIDX(i+3, j+2, dim)];
+
+                        dst[RIDX(dim-1-j-3, i, dim)] = src[RIDX(i, j+3, dim)];
+                        dst[RIDX(dim-1-j-3, i+1, dim)] = src[RIDX(i+1, j+3, dim)];
+                        dst[RIDX(dim-1-j-3, i+2, dim)] = src[RIDX(i+2, j+3, dim)];
+                        dst[RIDX(dim-1-j-3, i+3, dim)] = src[RIDX(i+3, j+3, dim)];
+
+                        dst[RIDX(dim-1-j-4, i, dim)] = src[RIDX(i, j+4, dim)];
+                        dst[RIDX(dim-1-j-4, i+1, dim)] = src[RIDX(i+1, j+4, dim)];
+                        dst[RIDX(dim-1-j-4, i+2, dim)] = src[RIDX(i+2, j+4, dim)];
+                        dst[RIDX(dim-1-j-4, i+3, dim)] = src[RIDX(i+3, j+4, dim)];
+
+                        dst[RIDX(dim-1-j-5, i, dim)] = src[RIDX(i, j+5, dim)];
+                        dst[RIDX(dim-1-j-5, i+1, dim)] = src[RIDX(i+1, j+5, dim)];
+                        dst[RIDX(dim-1-j-5, i+2, dim)] = src[RIDX(i+2, j+5, dim)];
+                        dst[RIDX(dim-1-j-5, i+3, dim)] = src[RIDX(i+3, j+5, dim)];
+
+                        dst[RIDX(dim-1-j-6, i, dim)] = src[RIDX(i, j+6, dim)];
+                        dst[RIDX(dim-1-j-6, i+1, dim)] = src[RIDX(i+1, j+6, dim)];
+                        dst[RIDX(dim-1-j-6, i+2, dim)] = src[RIDX(i+2, j+6, dim)];
+                        dst[RIDX(dim-1-j-6, i+3, dim)] = src[RIDX(i+3, j+6, dim)];
+
+                        dst[RIDX(dim-1-j-7, i, dim)] = src[RIDX(i, j+7, dim)];
+                        dst[RIDX(dim-1-j-7, i+1, dim)] = src[RIDX(i+1, j+7, dim)];
+                        dst[RIDX(dim-1-j-7, i+2, dim)] = src[RIDX(i+2, j+7, dim)];
+                        dst[RIDX(dim-1-j-7, i+3, dim)] = src[RIDX(i+3, j+7, dim)];
+
+                }
+        }
 }
 
 /*********************************************************************
@@ -102,11 +106,10 @@ void rotate(int dim, pixel *src, pixel *dst)
  *     driver program, it will test and report the performance of each
  *     registered test function.  
  *********************************************************************/
-
-void register_rotate_functions() 
+ void register_rotate_functions()
 {
-    add_rotate_function(&naive_rotate, naive_rotate_descr);   
-    add_rotate_function(&rotate, rotate_descr);   
+    add_rotate_function(&naive_rotate, naive_rotate_descr);
+    add_rotate_function(&rotate, rotate_descr);
     /* ... Register additional test functions here */
 }
 
@@ -135,7 +138,7 @@ static int max(int a, int b) { return (a > b ? a : b); }
 /* 
  * initialize_pixel_sum - Initializes all fields of sum to 0 
  */
-static void initialize_pixel_sum(pixel_sum *sum) 
+static void initialize_pixel_sum(pixel_sum *sum)
 {
     sum->red = sum->green = sum->blue = 0;
     sum->num = 0;
@@ -146,7 +149,7 @@ static void initialize_pixel_sum(pixel_sum *sum)
  * accumulate_sum - Accumulates field values of p in corresponding 
  * fields of sum 
  */
-static void accumulate_sum(pixel_sum *sum, pixel p) 
+static void accumulate_sum(pixel_sum *sum, pixel p)
 {
     sum->red += (int) p.red;
     sum->green += (int) p.green;
@@ -158,7 +161,7 @@ static void accumulate_sum(pixel_sum *sum, pixel p)
 /* 
  * assign_sum_to_pixel - Computes averaged pixel value in current_pixel 
  */
-static void assign_sum_to_pixel(pixel *current_pixel, pixel_sum sum) 
+static void assign_sum_to_pixel(pixel *current_pixel, pixel_sum sum)
 {
     current_pixel->red = (unsigned short) (sum.red/sum.num);
     current_pixel->green = (unsigned short) (sum.green/sum.num);
@@ -169,16 +172,16 @@ static void assign_sum_to_pixel(pixel *current_pixel, pixel_sum sum)
 /* 
  * avg - Returns averaged pixel value at (i,j) 
  */
-static pixel avg(int dim, int i, int j, pixel *src) 
+static pixel avg(int dim, int i, int j, pixel *src)
 {
     int ii, jj;
     pixel_sum sum;
     pixel current_pixel;
 
     initialize_pixel_sum(&sum);
-    for(ii = max(i-1, 0); ii <= min(i+1, dim-1); ii++) 
-	for(jj = max(j-1, 0); jj <= min(j+1, dim-1); jj++) 
-	    accumulate_sum(&sum, src[RIDX(ii, jj, dim)]);
+    for(ii = max(i-1, 0); ii <= min(i+1, dim-1); ii++)
+        for(jj = max(j-1, 0); jj <= min(j+1, dim-1); jj++)
+            accumulate_sum(&sum, src[RIDX(ii, jj, dim)]);
 
     assign_sum_to_pixel(&current_pixel, sum);
     return current_pixel;
@@ -192,13 +195,13 @@ static pixel avg(int dim, int i, int j, pixel *src)
  * naive_smooth - The naive baseline version of smooth 
  */
 char naive_smooth_descr[] = "naive_smooth: Naive baseline implementation";
-void naive_smooth(int dim, pixel *src, pixel *dst) 
+void naive_smooth(int dim, pixel *src, pixel *dst)
 {
     int i, j;
 
     for (i = 0; i < dim; i++)
-	for (j = 0; j < dim; j++)
-	    dst[RIDX(i, j, dim)] = avg(dim, i, j, src);
+        for (j = 0; j < dim; j++)
+            dst[RIDX(i, j, dim)] = avg(dim, i, j, src);
 }
 
 /*
@@ -206,7 +209,7 @@ void naive_smooth(int dim, pixel *src, pixel *dst)
  * IMPORTANT: This is the version you will be graded on
  */
 char smooth_descr[] = "smooth: Current working version";
-void smooth(int dim, pixel *src, pixel *dst) 
+void smooth(int dim, pixel *src, pixel *dst)
 {
     naive_smooth(dim, src, dst);
 }
@@ -225,4 +228,3 @@ void register_smooth_functions() {
     add_smooth_function(&naive_smooth, naive_smooth_descr);
     /* ... Register additional test functions here */
 }
-
